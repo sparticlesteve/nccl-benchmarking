@@ -1,9 +1,8 @@
 #!/bin/bash -l
 #SBATCH --time=2:00:00
 #SBATCH -C gpu
-#SBATCH --account=nstaff
 #SBATCH -q regular
-#SBATCH --nodes=256
+#SBATCH --nodes=4
 #SBATCH --gpus-per-node=4
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=32
@@ -25,7 +24,7 @@ NODE_COUNTS="${NODE_COUNTS:-2 4}" # 8 16 32 64 128 256}"
 USE_ALT_READ="${USE_ALT_READ:-false}"  # true or false to enable alt_read settings
 
 # Set up output
-export OUTDIR="$SCRATCH/nccl-testing/nccl-benchmarking/$SLURM_JOBID"
+export OUTDIR="$SCRATCH/nccl-benchmarking/logs/$SLURM_JOBID"
 mkdir -p "$OUTDIR"
 
 # Load environment
@@ -59,7 +58,7 @@ echo "Environment settings:"
 env | grep -E '^FI_|^NCCL_'
 
 # Build NCCL tests if needed
-NCCL_TESTS_DIR=${NCCL_TESTS_DIR:-$SCRATCH/nccl-testing/nccl-tests}
+NCCL_TESTS_DIR=${NCCL_TESTS_DIR:-$SCRATCH/nccl-benchmarking/builds/$ENV_VERSION/nccl-tests}
 if [ ! -d "$NCCL_TESTS_DIR" ]; then
     echo "NCCL tests directory not found. Cloning..."
     mkdir -p "$NCCL_TESTS_DIR"
