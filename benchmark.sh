@@ -2,6 +2,7 @@
 #SBATCH --time=2:00:00
 #SBATCH -C gpu
 #SBATCH -q regular
+#SBATCH -d singleton
 #SBATCH --nodes=4
 #SBATCH --gpus-per-node=4
 #SBATCH --ntasks-per-node=4
@@ -19,7 +20,8 @@ ENV_NAME=$ENV_VERSION
 
 # Benchmark configs
 BENCHMARK_EXE="${BENCHMARK_EXE:-all_reduce_perf}"  # or allgather, reducescatter
-NODE_COUNTS="${NODE_COUNTS:-2 4}" # 8 16 32 64 128 256}"
+# By default, scan over all possible powers of 2 node counts
+NODE_COUNTS="${NODE_COUNTS:-$(for ((i=2; i<=SLURM_JOB_NUM_NODES; i=i*2)); do echo -n "$i "; done | xargs)}"
 
 # Optional alt_read toggle
 USE_ALT_READ="${USE_ALT_READ:-false}"  # true or false to enable alt_read settings
@@ -52,11 +54,12 @@ fi
 # Default settings that are always applied
 export MPICH_GPU_SUPPORT_ENABLED=0
 export FI_CXI_SAFE_DEVMEM_COPY_THRESHOLD=16777216
+export FI_CXI_RDZV_GET_MIN=0
 
 # Apply alt_read settings if enabled
 if [ "$USE_ALT_READ" == "true" ]; then
     export FI_CXI_RDZV_PROTO=alt_read
-    export FI_CXI_RDZV_GET_MIN=0
+    export FI_CXI_RX_MATCH_MODE=software
     ENV_NAME=${ENV_NAME}_altread
     echo "Alt_read settings enabled"
 fi
@@ -65,7 +68,7 @@ echo "Environment settings:"
 env | grep -E '^FI_|^NCCL_'
 
 # Build NCCL tests if needed
-NCCL_TESTS_DIR=${NCCL_TESTS_DIR:-$SCRATCH/nccl-benchmarking/builds/$ENV_NAME/nccl-tests}
+NCCL_TESTS_DIR=${NCCL_TESTS_DIR:-$SCRATCH/nccl-benchmarking/builds/$ENV_VERSION/nccl-tests}
 if ${CLEAN_BUILD:-false}; then
     rm -rf $NCCL_TESTS_DIR
 fi
