@@ -15,6 +15,7 @@ date
 # Select software environment
 ENV_TYPE="${ENV_TYPE:-module}"  # or "container"
 ENV_VERSION="${ENV_VERSION:-default}"
+ENV_NAME=$ENV_VERSION
 
 # Benchmark configs
 BENCHMARK_EXE="${BENCHMARK_EXE:-all_reduce_perf}"  # or allgather, reducescatter
@@ -56,6 +57,7 @@ export FI_CXI_SAFE_DEVMEM_COPY_THRESHOLD=16777216
 if [ "$USE_ALT_READ" == "true" ]; then
     export FI_CXI_RDZV_PROTO=alt_read
     export FI_CXI_RDZV_GET_MIN=0
+    ENV_NAME=${ENV_NAME}_altread
     echo "Alt_read settings enabled"
 fi
 
@@ -63,7 +65,7 @@ echo "Environment settings:"
 env | grep -E '^FI_|^NCCL_'
 
 # Build NCCL tests if needed
-NCCL_TESTS_DIR=${NCCL_TESTS_DIR:-$SCRATCH/nccl-benchmarking/builds/$ENV_VERSION/nccl-tests}
+NCCL_TESTS_DIR=${NCCL_TESTS_DIR:-$SCRATCH/nccl-benchmarking/builds/$ENV_NAME/nccl-tests}
 if ${CLEAN_BUILD:-false}; then
     rm -rf $NCCL_TESTS_DIR
 fi
@@ -87,6 +89,6 @@ common_args="-b 32K -e 4G -d float -G 1 -f 2 -g 1"
 set -x
 for nn in $NODE_COUNTS; do
     echo "Running $BENCHMARK_EXE on $nn nodes"
-    logfile="$OUTDIR/${BENCHMARK_EXE%_perf}_nodes_${nn}_out.log"
+    logfile="$OUTDIR/${BENCHMARK_EXE%_perf}_${ENV_NAME}_nodes_${nn}_out.log"
     srun -u --cpu-bind=none --nodes=$nn --ntasks-per-node=4 $LAUNCH_CMD $exe $common_args 2>&1 | tee "$logfile"
 done
