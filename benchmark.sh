@@ -84,8 +84,9 @@ exe="$NCCL_TESTS_DIR/build/$BENCHMARK_EXE"
 
 common_args="-b 32K -e 4G -d float -G 1 -f 2 -g 1"
 
+set -x
 for nn in $NODE_COUNTS; do
     echo "Running $BENCHMARK_EXE on $nn nodes"
     logfile="$OUTDIR/${BENCHMARK_EXE%_perf}_nodes_${nn}_out.log"
-    srun -u --cpu-bind=none --nodes=$nn --ntasks-per-node=4 "$LAUNCH_CMD" "$exe" $common_args 2>&1 | tee "$logfile"
+    srun -u --cpu-bind=none --nodes=$nn --ntasks-per-node=4 $LAUNCH_CMD $exe $common_args 2>&1 | tee "$logfile"
 done
