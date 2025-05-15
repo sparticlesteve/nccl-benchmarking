@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/bin/bash
 #SBATCH --time=2:00:00
 #SBATCH -C gpu
 #SBATCH -q regular
