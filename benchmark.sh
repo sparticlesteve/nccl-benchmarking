@@ -32,6 +32,11 @@ mkdir -p "$OUTDIR"
 if [ "$ENV_TYPE" == "module" ]; then
     echo "Loading module environment: nccl/$ENV_VERSION"
     module load nccl/"$ENV_VERSION"
+    # Build settings
+    export MPI_HOME=$CRAY_MPICH_DIR
+    export NVCC_GENCODE="-gencode=arch=compute_80,code=sm_80"
+    export NPROC=10
+    export MPICC=CC
     LAUNCH_CMD=""
 elif [ "$ENV_TYPE" == "container" ]; then
     echo "Loading container environment: $ENV_VERSION"
@@ -59,6 +64,9 @@ env | grep -E '^FI_|^NCCL_'
 
 # Build NCCL tests if needed
 NCCL_TESTS_DIR=${NCCL_TESTS_DIR:-$SCRATCH/nccl-benchmarking/builds/$ENV_VERSION/nccl-tests}
+if ${CLEAN_BUILD:-false}; then
+    rm -rf $NCCL_TESTS_DIR
+fi
 if [ ! -d "$NCCL_TESTS_DIR" ]; then
     echo "NCCL tests directory not found. Cloning..."
     mkdir -p "$NCCL_TESTS_DIR"
