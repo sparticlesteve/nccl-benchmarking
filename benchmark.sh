@@ -95,7 +95,7 @@ fi
 # Run benchmark
 exe="$NCCL_TESTS_DIR/build/$BENCHMARK_EXE"
 
-common_args="-b 32K -e 4G -G 1 -f 2 -g 1"
+common_args="-b 32K -e 4G -G 1 -f 2 -g 1 -n 50"
 
 set -x
 for nn in $NODE_COUNTS; do
