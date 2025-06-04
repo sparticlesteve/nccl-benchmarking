@@ -6,7 +6,7 @@
 export SBATCH_OUTPUT="slurm-Jun4-%j.out"
 VERSIONS=("2.19.4" "2.21.5" "2.24.3")
 NUM_NODES=(2 4 8)
-export NCCL_ALGO=Ring
+export NCCL_ALGO=Tree #Ring
 
 # Loop over different ENV_VERSION values
 for version in "${VERSIONS[@]}"; do
