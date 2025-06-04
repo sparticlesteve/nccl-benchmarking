@@ -3,9 +3,10 @@
 # Using this script to capture my primary experiment launch settings
 
 # Current experiments
-export SBATCH_OUTPUT="slurm-Jun4-%j.out"
+OUTPUT_BASE="logs/jun4-3"
+export SBATCH_OUTPUT="$OUTPUT_BASE/slurm-%j.out"
 VERSIONS=("2.19.4" "2.21.5" "2.24.3")
-NUM_NODES=(2 4 8)
+NUM_NODES=(2 4 8 16)
 NCCL_ALGOS=("Tree" "Ring")
 
 # Loop over different NCCL_ALGO values
