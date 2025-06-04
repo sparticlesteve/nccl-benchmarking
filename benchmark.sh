@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=2:00:00
+#SBATCH --time=10:00
 #SBATCH -C gpu&hbm40g
 #SBATCH -q regular
 #SBATCH -d singleton
