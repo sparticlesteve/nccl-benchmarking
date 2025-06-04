@@ -64,6 +64,14 @@ if [ "$USE_ALT_READ" == "true" ]; then
     echo "Alt_read settings enabled"
 fi
 
+# Apply NCCL algorithm settings if specified
+NCCL_ALGO="${NCCL_ALGO:-}"
+if [ -n "$NCCL_ALGO" ]; then
+    export NCCL_ALGO="$NCCL_ALGO"
+    ENV_NAME=${ENV_NAME}_${NCCL_ALGO}
+    echo "NCCL algorithm set to: $NCCL_ALGO"
+fi
+
 echo "Environment settings:"
 env | grep -E '^FI_|^NCCL_'
 
