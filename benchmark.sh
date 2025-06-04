@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --time=2:00:00
-#SBATCH -C gpu
+#SBATCH -C gpu&hbm40g
 #SBATCH -q regular
 #SBATCH -d singleton
 #SBATCH --nodes=4
@@ -20,8 +20,8 @@ ENV_NAME=$ENV_VERSION
 
 # Benchmark configs
 BENCHMARK_EXE="${BENCHMARK_EXE:-all_reduce_perf}"  # or allgather, reducescatter
-# By default, scan over all possible powers of 2 node counts
-NODE_COUNTS="${NODE_COUNTS:-$(for ((i=2; i<=SLURM_JOB_NUM_NODES; i=i*2)); do echo -n "$i "; done | xargs)}"
+# By default, just run once on the full node count
+NODE_COUNTS="${NODE_COUNTS:-$SLURM_JOB_NUM_NODES}"
 
 # Optional alt_read toggle
 USE_ALT_READ="${USE_ALT_READ:-false}"  # true or false to enable alt_read settings
