@@ -47,6 +47,10 @@ def parse_nccl_log(log_file_path: str) -> Dict:
     nccl_version_match = re.search(r'NCCL_VERSION=([^\s\n]+)', content)
     metadata['nccl_version'] = nccl_version_match.group(1) if nccl_version_match else None
 
+    # NCCL Algorithm
+    nccl_algo_match = re.search(r'NCCL_ALGO=([^\s\n]+)', content)
+    metadata['nccl_algo'] = nccl_algo_match.group(1) if nccl_algo_match else None
+
     # Check for FI_CXI_RDZV_PROTO=alt_read
     metadata['uses_alt_read'] = 'FI_CXI_RDZV_PROTO=alt_read' in content
 
@@ -125,6 +129,7 @@ def performance_data_to_dataframe(parsed_results: List[Dict]) -> pd.DataFrame:
                 row = {
                     'jobid': result['jobid'],
                     'nccl_version': result['nccl_version'],
+                    'nccl_algo': result['nccl_algo'],
                     'uses_alt_read': result['uses_alt_read'],
                     'num_nodes': result['num_nodes'],
                     'num_gpus': result['num_gpus'],
