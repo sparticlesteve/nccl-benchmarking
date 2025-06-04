@@ -6,8 +6,14 @@
 OUTPUT_BASE="logs/jun4-3"
 export SBATCH_OUTPUT="$OUTPUT_BASE/slurm-%j.out"
 VERSIONS=("2.19.4" "2.21.5" "2.24.3")
-NUM_NODES=(2 4 8 16)
 NCCL_ALGOS=("Tree" "Ring")
+if [ "$NERSC_HOST" = "muller" ]; then
+    NUM_NODES=(2 4 8 16)
+elif [ "$NERSC_HOST" = "perlmutter" ]; then
+    NUM_NODES=(32 128 512)
+else
+    NUM_NODES=(2)
+fi
 
 # Loop over different NCCL_ALGO values
 for algo in "${NCCL_ALGOS[@]}"; do
