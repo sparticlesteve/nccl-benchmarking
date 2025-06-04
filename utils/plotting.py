@@ -37,8 +37,12 @@ def plot_nccl_performance(df: pd.DataFrame,
         nccl_version = group['nccl_version'].iloc[0] or 'Unknown'
         uses_alt_read = group['uses_alt_read'].iloc[0]
         alt_read_str = "alt_read" if uses_alt_read else "no_alt_read"
+        nccl_algo = group['nccl_algo'].iloc[0]
         
-        label = f"Job {jobid} (NCCL {nccl_version}, {alt_read_str})"
+        label = f"Job {jobid} (NCCL {nccl_version}, {alt_read_str}"
+        if nccl_algo is not None:
+            label += f", {nccl_algo}"
+        label += ")"
         
         # Sort by message size for clean lines
         group_sorted = group.sort_values('size_bytes')
